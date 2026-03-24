@@ -1,4 +1,10 @@
 import SubjectDropdown from "./SubjectDropdown"
+const colorMap = {
+    blue: "border-blue/30 hover:bg-blue/10 hover:border-blue group-hover:text-blue",
+    green: "border-green/30 hover:bg-green/10 hover:border-green group-hover:text-green",
+    mauve: "border-mauve/30 hover:bg-mauve/10 hover:border-mauve group-hover:text-mauve",
+    peach: "border-peach/30 hover:bg-peach/10 hover:border-peach group-hover:text-peach",
+}
 
 const GridButton = ({ title, color }) => {
     return (
@@ -6,19 +12,16 @@ const GridButton = ({ title, color }) => {
             group cursor-pointer
             flex flex-col items-center justify-center
             w-72 h-48
-            rounded-xl border
+            rounded-xl border bg-base
             transition-all duration-300 ease-in-out
-
-            bg-base border-${color}/30
-            hover:bg-${color}/10 hover:border-${color}
             hover:shadow-lg hover:scale-105
+            ${colorMap[color]}
         `}>
-            <div className={`
+            <div className="
                 text-2xl font-semibold
                 text-subtext-1
                 transition-colors duration-300
-                group-hover:text-${color}
-            `}>
+            ">
                 {title}
             </div>
         </div>
