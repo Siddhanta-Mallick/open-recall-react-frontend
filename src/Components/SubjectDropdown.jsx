@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSubject } from "../Context/SubjectContext";
 
 const ChevronDown = ({ isOpen }) => (
     <svg
@@ -23,10 +24,16 @@ const ChevronDown = ({ isOpen }) => (
 
 const SubjectDropdown = ({ options = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(options[0]);
+    const { subject, setSubject } = useSubject();
+
+    useEffect(() => {
+        if (options.length > 0 && !subject) {
+            setSubject(options[0]);
+        }
+    }, [options, subject, setSubject]);
 
     const handleSelect = (option) => {
-        setSelected(option);
+        setSubject(option);
         setIsOpen(false);
     };
 
@@ -49,7 +56,7 @@ const SubjectDropdown = ({ options = [] }) => {
                 "
             >
                 <span className="transition-colors duration-300 group-hover:text-sapphire">
-                    {selected}
+                    {subject}
                 </span>
                 <ChevronDown isOpen={isOpen} />
             </div>

@@ -1,11 +1,13 @@
 import SubjectSelection from "./Components/SubjectSelection"
+import { SubjectContextProvider } from "./Context/SubjectContext"
 
-SubjectSelection
 function App() {
 
   return (
     <div id="container" className="w-full h-screen flex justify-center">
-      <SubjectSelection />
+      <SubjectContextProvider>
+        <SubjectSelection />
+      </SubjectContextProvider>
     </div>
   )
 }
