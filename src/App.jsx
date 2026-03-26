@@ -1,12 +1,19 @@
 import SubjectSelection from "./Components/SubjectSelection"
 import { SubjectContextProvider } from "./Context/SubjectContext"
+import { Routes, Route } from 'react-router-dom'
+
+import AddWord from "./Components/Vocabulary/AddWord.jsx"
+
 
 function App() {
 
   return (
     <div id="container" className="w-full h-screen flex justify-center">
       <SubjectContextProvider>
-        <SubjectSelection />
+        <Routes>
+          <Route path="/" element={<SubjectSelection />} />
+          <Route path="/vocabulary/add" element={<AddWord />} />
+        </Routes>
       </SubjectContextProvider>
     </div>
   )

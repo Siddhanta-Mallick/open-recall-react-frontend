@@ -1,4 +1,7 @@
 import SubjectDropdown from "./SubjectDropdown"
+import { useSubject } from "../Context/SubjectContext"
+import { Link } from "react-router"
+
 const colorMap = {
     blue: "border-blue/30 hover:bg-blue/10 hover:border-blue group-hover:text-blue",
     green: "border-green/30 hover:bg-green/10 hover:border-green group-hover:text-green",
@@ -29,6 +32,9 @@ const GridButton = ({ title, color }) => {
 }
 
 export default function SubjectSelection() {
+
+    const { subject } = useSubject();
+
     return (
         <div id="main-card" className="
             flex flex-col items-center
@@ -39,10 +45,18 @@ export default function SubjectSelection() {
             <div id="button-grid" className="
                 grid grid-cols-2 gap-6
             ">
-                <GridButton title="Edit Material" color="blue" />
-                <GridButton title="Take Tests" color="green" />
-                <GridButton title="Assisted Revision" color="mauve" />
-                <GridButton title="Full Revision" color="peach" />
+                <Link to={`/${subject}/add`}>
+                    <GridButton title="Add Material" color="blue" />
+                </Link>
+                <Link to={`/${subject}/test`}>
+                    <GridButton title="Take Tests" color="green" />
+                </Link>
+                <Link to={`/${subject}/revision`}>
+                    <GridButton title="Revision" color="mauve" />
+                </Link>
+                <Link to={`/${subject}/edit`}>
+                    <GridButton title="Edit Material" color="peach" />
+                </Link>
             </div>
         </div>
     )
