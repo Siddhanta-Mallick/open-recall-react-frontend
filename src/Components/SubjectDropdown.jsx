@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSubject } from "../Context/SubjectContext";
 
 const ChevronDown = ({ isOpen }) => (
@@ -22,15 +22,9 @@ const ChevronDown = ({ isOpen }) => (
     </svg>
 );
 
-const SubjectDropdown = ({ options = [] }) => {
+const SubjectDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { subject, setSubject } = useSubject();
-
-    useEffect(() => {
-        if (options.length > 0 && !subject) {
-            setSubject(options[0]);
-        }
-    }, [options, subject, setSubject]);
+    const { subject, setSubject, subjectOptions } = useSubject();
 
     const handleSelect = (option) => {
         setSubject(option);
@@ -73,7 +67,7 @@ const SubjectDropdown = ({ options = [] }) => {
                         animate-fadeIn
                     "
                 >
-                    {options.map((option, index) => (
+                    {subjectOptions.map((option, index) => (
                         <div
                             key={index}
                             onClick={() => handleSelect(option)}

@@ -34,7 +34,7 @@ export default function SubjectSelection() {
             flex flex-col items-center
             w-3/4 mt-20 gap-10
         ">
-            <SubjectDropdown options={["Vocabulary", "DSA", "Option 3"]} />
+            <SubjectDropdown />
 
             <div id="button-grid" className="
                 grid grid-cols-2 gap-6

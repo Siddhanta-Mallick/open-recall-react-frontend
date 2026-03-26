@@ -7,12 +7,16 @@ export function useSubject() {
 }
 
 export function SubjectContextProvider({ children }) {
-    const [subject, setSubject] = useState("");
+
+    const subjectOptions = ["Vocabulary", "DSA", "Option 3"];
+
+    const [subject, setSubject] = useState(subjectOptions[0]);
 
     return (
         <SubjectContext.Provider value={{
             subject,
             setSubject,
+            subjectOptions,
         }} >
             {children}
         </SubjectContext.Provider>
