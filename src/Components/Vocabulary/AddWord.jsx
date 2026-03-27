@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { apiService } from "../../apiService";
 import { useSubject } from "../../Context/SubjectContext";
+import { useNavigate } from "react-router";
 
 
 export default function AddWord({ onAdd }) {
     const [word, setWord] = useState("");
     const [meaning, setMeaning] = useState("");
+
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
         if (!word.trim() || !meaning.trim()) return;
@@ -22,6 +25,8 @@ export default function AddWord({ onAdd }) {
 
         setWord("");
         setMeaning("");
+
+        navigate("/")
     };
 
     return (
