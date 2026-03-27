@@ -7,8 +7,6 @@ export default function AddWord({ onAdd }) {
     const [word, setWord] = useState("");
     const [meaning, setMeaning] = useState("");
 
-    const { subject } = useSubject();
-
     const handleSubmit = async () => {
         if (!word.trim() || !meaning.trim()) return;
 
@@ -17,7 +15,7 @@ export default function AddWord({ onAdd }) {
         }
 
         await apiService.addMaterial({
-            subject: subject,
+            subject: "wordlist",
             title: word,
             content: meaning
         });
