@@ -22,7 +22,8 @@ export const apiService = {
     revision: async (config) => {
 
     },
-    editMaterial: async (config) => {
-
+    viewMaterial: async (config) => {
+        const response = await axios.get(`${API_BASE_URL}/${config.subject.toLowerCase()}/view/`);
+        return response.data
     }
 };
