@@ -1,15 +1,26 @@
 import { useState } from "react";
+import { apiService } from "../../apiService";
+import { useSubject } from "../../Context/SubjectContext";
+
 
 export default function AddWord({ onAdd }) {
     const [word, setWord] = useState("");
     const [meaning, setMeaning] = useState("");
 
-    const handleSubmit = () => {
+    const { subject } = useSubject();
+
+    const handleSubmit = async () => {
         if (!word.trim() || !meaning.trim()) return;
 
         if (onAdd) {
             onAdd({ word, meaning });
         }
+
+        await apiService.addMaterial({
+            subject: subject,
+            title: word,
+            content: meaning
+        });
 
         setWord("");
         setMeaning("");
