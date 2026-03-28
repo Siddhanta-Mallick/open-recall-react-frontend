@@ -3,6 +3,8 @@ import { SubjectContextProvider } from "./Context/SubjectContext"
 import { Routes, Route } from 'react-router-dom'
 
 import AddWord from "./Components/Vocabulary/AddWord.jsx"
+import WordlistMenu from "./Components/Vocabulary/WordlistMenu.jsx"
+import EditWordInput from "./Components/Vocabulary/EditWordInput.jsx"
 
 
 function App() {
@@ -13,6 +15,8 @@ function App() {
         <Routes>
           <Route path="/" element={<SubjectSelection />} />
           <Route path="/vocabulary/add" element={<AddWord />} />
+          <Route path="/vocabulary/edit" element={<WordlistMenu />} />
+          <Route path="/vocabulary/edit-input" element={<EditWordInput />} />
         </Routes>
       </SubjectContextProvider>
     </div>
