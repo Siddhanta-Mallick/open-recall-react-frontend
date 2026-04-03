@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router"; // Note: In React Router v6+, this is usually "react-router-dom"
 import axios from "axios";
 
+import TestResults from "./TestResults";
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function QuizModal() {
@@ -13,6 +15,8 @@ export default function QuizModal() {
 
     const [questionStatus, setQuestionStatus] = useState("unanswered");
     const [isLoading, setIsLoading] = useState(true);
+
+    const [totalCorrect, setTotalCorrect] = useState(0);
 
     useEffect(() => {
         const fetchWords = async () => {
@@ -44,6 +48,9 @@ export default function QuizModal() {
             answer: answerInput
         });
 
+        if (response.data.evaluation.toLowerCase() == "correct")
+            setTotalCorrect((prev) => prev + 1);
+
         setQuestionStatus(response.data.evaluation.toLowerCase());
         setObservation(response.data.observation)
     };
@@ -70,14 +77,10 @@ export default function QuizModal() {
     // Completed State
     if (isFinished) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-base text-text">
-                <h1 className="text-3xl font-bold mb-4">Quiz Completed!</h1>
-                <Link to="/">
-                    <button className="px-6 py-3 bg-blue text-base rounded-lg hover:bg-blue/90 transition">
-                        Back to Home
-                    </button>
-                </Link>
-            </div>
+            <TestResults
+                correct={totalCorrect}
+                total_questions={wordList.length}
+            />
         );
     }
 
