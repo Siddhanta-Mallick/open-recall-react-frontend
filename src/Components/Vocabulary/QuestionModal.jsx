@@ -6,6 +6,12 @@ import TestResults from "./TestResults";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
+const QuestionStatus = Object.freeze({
+    UNANSWERED: "unanswered",
+    CORRECT: "correct",
+    INCORRECT: "incorrect"
+});
+
 export default function QuizModal() {
 
     const [wordList, setWordList] = useState([]);
@@ -13,7 +19,7 @@ export default function QuizModal() {
     const [answerInput, setAnswerInput] = useState("");
     const [observation, setObservation] = useState("");
 
-    const [questionStatus, setQuestionStatus] = useState("unanswered");
+    const [questionStatus, setQuestionStatus] = useState(QuestionStatus.UNANSWERED);
     const [isLoading, setIsLoading] = useState(true);
 
     const [totalCorrect, setTotalCorrect] = useState(0);
@@ -48,24 +54,26 @@ export default function QuizModal() {
             answer: answerInput
         });
 
-        if (response.data.evaluation.toLowerCase() == "correct")
+        if (response.data.evaluation.toLowerCase() == QuestionStatus.CORRECT) {
             setTotalCorrect((prev) => prev + 1);
+            setQuestionStatus(QuestionStatus.CORRECT);
+        } else
+            setQuestionStatus(QuestionStatus.INCORRECT);
 
-        setQuestionStatus(response.data.evaluation.toLowerCase());
         setObservation(response.data.observation)
     };
 
     const handleAdvance = () => {
         setCurrentIndex((prev) => prev + 1);
         setAnswerInput("");
-        setQuestionStatus("unanswered");
+        setQuestionStatus(QuestionStatus.UNANSWERED);
         setObservation("");
     };
 
     let cardFeedbackClass = "border-mantle shadow-lg"; // default state
-    if (questionStatus === "correct") {
+    if (questionStatus === QuestionStatus.CORRECT) {
         cardFeedbackClass = "border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.15)]";
-    } else if (questionStatus === "incorrect" || questionStatus === "wrong") {
+    } else if (questionStatus === QuestionStatus.INCORRECT) {
         cardFeedbackClass = "border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.15)]";
     }
 
@@ -130,7 +138,7 @@ export default function QuizModal() {
                         placeholder="Type the meaning here..."
                         value={answerInput}
                         onChange={(e) => setAnswerInput(e.target.value)}
-                        disabled={questionStatus === "correct"}
+                        disabled={questionStatus === QuestionStatus.CORRECT}
                         rows={3}
                         className={`
                             px-4 py-3 rounded-lg
@@ -139,9 +147,9 @@ export default function QuizModal() {
                             resize-none transition-all duration-200
                             focus:outline-none focus:ring-2
                             disabled:opacity-50 disabled:cursor-not-allowed
-                            ${questionStatus === "correct"
+                            ${questionStatus === QuestionStatus.CORRECT
                                 ? "border-green-500/50 focus:border-green-500 focus:ring-green-500/20"
-                                : questionStatus === "incorrect" || questionStatus === "wrong"
+                                : questionStatus === QuestionStatus.INCORRECT
                                     ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
                                     : "border-surface-0 focus:border-blue focus:ring-blue/20"
                             }
@@ -150,7 +158,7 @@ export default function QuizModal() {
 
                     <div className="flex gap-3 mt-2">
                         {/* Submit Button */}
-                        {questionStatus !== "correct" && (
+                        {questionStatus !== QuestionStatus.CORRECT && (
                             <button
                                 onClick={handleSubmit}
                                 disabled={!answerInput.trim()}
@@ -170,28 +178,28 @@ export default function QuizModal() {
                             onClick={handleAdvance}
                             className={`
                                 flex-1 py-3 rounded-lg font-medium text-base transition-all duration-200
-                                ${questionStatus === "correct"
+                                ${questionStatus === QuestionStatus.CORRECT
                                     ? "bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-600/20"
                                     : "bg-surface-0 text-text hover:bg-surface-1"
                                 }
                             `}
                         >
-                            {questionStatus === "correct" ? "Next Word" : "Skip"}
+                            {questionStatus === QuestionStatus.CORRECT ? "Next Word" : "Skip"}
                         </button>
                     </div>
 
                     {/* Feedback Message */}
-                    {questionStatus === "unanswered" && (
+                    {questionStatus === QuestionStatus.UNANSWERED && (
                         <div className="text-text font-semibold text-center mt-2 animate-fade-in">
                             {observation}
                         </div>
                     )}
-                    {questionStatus === "correct" && (
+                    {questionStatus === QuestionStatus.CORRECT && (
                         <div className="text-green-500 font-semibold text-center mt-2 animate-fade-in">
                             {observation}
                         </div>
                     )}
-                    {(questionStatus === "wrong" || questionStatus === "incorrect") && (
+                    {(questionStatus === QuestionStatus.INCORRECT) && (
                         <div className="text-red-500 font-semibold text-center mt-2 animate-fade-in">
                             {observation}
                         </div>
