@@ -20,9 +20,13 @@ export default function QuizModal() {
     const [observation, setObservation] = useState("");
 
     const [questionStatus, setQuestionStatus] = useState(QuestionStatus.UNANSWERED);
+    const [sentenceStatus, setSentenceStatus] = useState(QuestionStatus.UNANSWERED);
     const [isLoading, setIsLoading] = useState(true);
 
     const [totalCorrect, setTotalCorrect] = useState(0);
+
+    const [sentenceInput, setSentenceInput] = useState("");
+    const [sentenceObservation, setSentenceObservation] = useState("");
 
     useEffect(() => {
         const fetchWords = async () => {
@@ -63,11 +67,35 @@ export default function QuizModal() {
         setObservation(response.data.observation)
     };
 
+    const handleSentenceSubmit = async () => {
+        if (!sentenceInput.trim()) return;
+
+        setSentenceObservation("Checking...");
+
+        const response = await axios.post(`${API_BASE_URL}/evaluator/check-sentence/`, {
+            title: currentWord.word,
+            content: currentWord.meaning,
+            answer: sentenceInput
+        });
+
+        if (response.data.evaluation.toLowerCase() == QuestionStatus.CORRECT) {
+            setSentenceStatus(QuestionStatus.CORRECT);
+        } else {
+            setSentenceStatus(QuestionStatus.INCORRECT);
+        }
+
+        setSentenceObservation(response.data.observation);
+    };
+
     const handleAdvance = () => {
         setCurrentIndex((prev) => prev + 1);
         setAnswerInput("");
         setQuestionStatus(QuestionStatus.UNANSWERED);
         setObservation("");
+
+        setSentenceInput("");
+        setSentenceStatus(QuestionStatus.UNANSWERED);
+        setSentenceObservation("");
     };
 
     let cardFeedbackClass = "border-mantle shadow-lg"; // default state
@@ -156,36 +184,100 @@ export default function QuizModal() {
                         `}
                     />
 
+                    {/* Sentence Input (Revealed after correct meaning) */}
+                    {questionStatus === QuestionStatus.CORRECT && (
+                        <div className="flex flex-col gap-3 animate-fade-in border-t border-mantle pt-4">
+                            <div className="text-sm uppercase tracking-wide font-semibold text-text">
+                                Use "{currentWord.title || currentWord.word}" in a sentence:
+                            </div>
+                            <textarea
+                                placeholder="Write your sentence here..."
+                                value={sentenceInput}
+                                onChange={(e) => setSentenceInput(e.target.value)}
+                                disabled={sentenceStatus === QuestionStatus.CORRECT}
+                                rows={3}
+                                className={`
+                                    px-4 py-3 rounded-lg
+                                    border bg-base
+                                    text-text placeholder-subtext-0
+                                    resize-none transition-all duration-200
+                                    focus:outline-none focus:ring-2
+                                    disabled:opacity-50 disabled:cursor-not-allowed
+                                    ${sentenceStatus === QuestionStatus.CORRECT
+                                        ? "border-green-500/50 focus:border-green-500 focus:ring-green-500/20"
+                                        : sentenceStatus === QuestionStatus.INCORRECT
+                                            ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+                                            : "border-surface-0 focus:border-blue focus:ring-blue/20"
+                                    }
+                                `}
+                            />
+
+                            {/* Sentence Feedback */}
+                            {sentenceObservation && (
+                                <div className={`text-center font-semibold animate-fade-in ${sentenceStatus === QuestionStatus.CORRECT ? "text-green-500" :
+                                    sentenceStatus === QuestionStatus.INCORRECT ? "text-red-500" : "text-text"
+                                    }`}>
+                                    {sentenceObservation}
+                                </div>
+                            )}
+
+                            <div className="flex gap-3">
+                                {sentenceStatus !== QuestionStatus.CORRECT && (
+                                    <button
+                                        onClick={handleSentenceSubmit}
+                                        disabled={!sentenceInput.trim()}
+                                        className="
+                                        flex-1 py-3 rounded-lg font-medium text-base
+                                        bg-blue text-base hover:bg-blue/90
+                                        disabled:bg-surface-0 disabled:text-subtext-0 disabled:cursor-not-allowed
+                                        transition-all duration-200 text-text
+                                    "
+                                    >
+                                        Check Sentence
+                                    </button>
+                                )}
+                                <button
+                                    onClick={handleAdvance}
+                                    className="flex-1 py-3 rounded-lg font-medium text-base bg-surface-0 text-text hover:bg-surface-1 transition-all duration-200"
+                                >
+                                    {sentenceStatus === QuestionStatus.CORRECT ? "Next Word" : "Skip Sentence"}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex gap-3 mt-2">
                         {/* Submit Button */}
                         {questionStatus !== QuestionStatus.CORRECT && (
-                            <button
-                                onClick={handleSubmit}
-                                disabled={!answerInput.trim()}
-                                className="
+                            <>
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={!answerInput.trim()}
+                                    className="
                                     flex-1 py-3 rounded-lg font-medium text-base
                                     bg-blue text-base hover:bg-blue/90
                                     disabled:bg-surface-0 disabled:text-subtext-0 disabled:cursor-not-allowed
                                     transition-all duration-200 text-text
                                 "
-                            >
-                                Submit Answer
-                            </button>
-                        )}
+                                >
+                                    Submit Answer
+                                </button>
 
-                        {/* Skip / Next logic */}
-                        <button
-                            onClick={handleAdvance}
-                            className={`
+                                {/* Skip / Next logic */}
+                                <button
+                                    onClick={handleAdvance}
+                                    className={`
                                 flex-1 py-3 rounded-lg font-medium text-base transition-all duration-200
                                 ${questionStatus === QuestionStatus.CORRECT
-                                    ? "bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-600/20"
-                                    : "bg-surface-0 text-text hover:bg-surface-1"
-                                }
+                                            ? "bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-600/20"
+                                            : "bg-surface-0 text-text hover:bg-surface-1"
+                                        }
                             `}
-                        >
-                            {questionStatus === QuestionStatus.CORRECT ? "Next Word" : "Skip"}
-                        </button>
+                                >
+                                    {questionStatus === QuestionStatus.CORRECT ? "Next Word" : "Skip"}
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Feedback Message */}
@@ -194,7 +286,7 @@ export default function QuizModal() {
                             {observation}
                         </div>
                     )}
-                    {questionStatus === QuestionStatus.CORRECT && (
+                    {questionStatus === QuestionStatus.CORRECT && !sentenceStatus && (
                         <div className="text-green-500 font-semibold text-center mt-2 animate-fade-in">
                             {observation}
                         </div>
